@@ -78,9 +78,6 @@ func WithSearchable(attributeName string) bstOpt {
 	fn := func(s any) any {
 		val := reflect.ValueOf(s)
 		name := val.FieldByName(attributeName)
-		if name.Type().String() == "string" {
-			return name.String()
-		}
 		switch name.Type().String() {
 		case "string":
 			return name.String()
@@ -91,9 +88,9 @@ func WithSearchable(attributeName string) bstOpt {
 		case "int64":
 			return int(name.Int())
 		case "uint":
-			return int(name.Int())
+			return int(name.Uint())
 		case "uint64":
-			return int(name.Int())
+			return int(name.Uint())
 		case "uint32":
 			return int(name.Uint()) // maps don't like anything but ints
 		}

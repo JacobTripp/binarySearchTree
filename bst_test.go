@@ -2,7 +2,6 @@ package binarySearchTree
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -97,24 +96,6 @@ func ExampleF_withCustomSearchable() {
 End Examples
 */
 
-func BenchmarkInsertAndNewLeaf(b *testing.B) {
-	bst := NewBST()
-	for i := 0; i < b.N; i++ {
-		bst.Insert(NewLeaf(i))
-	}
-}
-
-func BenchmarkFindByValue(b *testing.B) {
-	bst := NewBST()
-	for i := 0; i < 50_000; i++ {
-		bst.Insert(NewLeaf(i))
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		bst.FindByValue(i)
-	}
-}
-
 func setUp() BinarySearchTree {
 	bst := NewBST()
 	leafs := []struct {
@@ -132,6 +113,19 @@ func TestNewLeaf(t *testing.T) {
 	assert.IsType(t, &Leaf{}, l)
 }
 
+func TestSearchableTypes(t *testing.T) {
+	bst := NewBST(WithSearchable("num"))
+	bst.Insert(NewLeaf(struct{ num int32 }{1}))
+	assert.NotNil(t, bst.FindByValue(1))
+	bst.Insert(NewLeaf(struct{ num int64 }{2}))
+	assert.NotNil(t, bst.FindByValue(2))
+	bst.Insert(NewLeaf(struct{ num uint }{3}))
+	assert.NotNil(t, bst.FindByValue(3))
+	bst.Insert(NewLeaf(struct{ num uint64 }{4}))
+	assert.NotNil(t, bst.FindByValue(4))
+	bst.Insert(NewLeaf(struct{ num float64 }{4.0}))
+	assert.NotNil(t, bst.FindByValue(struct{ num float64 }{4.0}))
+}
 func TestWithSearchableInt(t *testing.T) {
 	type testCase struct {
 		name string
@@ -185,15 +179,13 @@ func TestNewBSTwithCustomFn(t *testing.T) {
 		{name: "xxxxx", age: 0},
 	}
 	valueFn := func(s any) any {
-		val := reflect.ValueOf(s)
-		name := val.FieldByName("name")
-		return name.String()
+		return s.(testCase).name + "s"
 	}
 	bst := NewBST(WithCustomSearchFn(valueFn))
 	for _, val := range values {
 		bst.Insert(NewLeaf(val))
 	}
-	found := bst.FindByValue("xxx")
+	found := bst.FindByValue("xxxs")
 	assert.Equal(t, 0, found.Value.(testCase).age)
 }
 
@@ -233,9 +225,28 @@ func TestFindByValue(t *testing.T) {
 	assert.Equal(t, uint(2), bst.FindByValue("bar").Key())
 	assert.Equal(t, uint(3), bst.FindByValue("foo").Key())
 	assert.Equal(t, uint(4), bst.FindByValue("qux").Key())
+	assert.Nil(t, bst.FindByValue("nope"))
 }
 
 func TestRemove(t *testing.T) {
 	bst := setUp()
 	assert.NotEmpty(t, bst)
+}
+
+func BenchmarkInsertAndNewLeaf(b *testing.B) {
+	bst := NewBST()
+	for i := 0; i < b.N; i++ {
+		bst.Insert(NewLeaf(i))
+	}
+}
+
+func BenchmarkFindByValue(b *testing.B) {
+	bst := NewBST()
+	for i := 0; i < 50_000; i++ {
+		bst.Insert(NewLeaf(i))
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		bst.FindByValue(i)
+	}
 }

@@ -123,8 +123,9 @@ func TestSearchableTypes(t *testing.T) {
 	assert.NotNil(t, bst.FindByValue(3))
 	bst.Insert(NewLeaf(struct{ num uint64 }{4}))
 	assert.NotNil(t, bst.FindByValue(4))
-	bst.Insert(NewLeaf(struct{ num float64 }{4.0}))
-	assert.NotNil(t, bst.FindByValue(struct{ num float64 }{4.0}))
+	assert.Panics(t, func() {
+		bst.Insert(NewLeaf(struct{ num float64 }{4.0}))
+	})
 }
 func TestWithSearchableInt(t *testing.T) {
 	type testCase struct {

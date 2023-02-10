@@ -94,7 +94,7 @@ func WithSearchable(attributeName string) bstOpt {
 		case "uint32":
 			return int(name.Uint()) // maps don't like anything but ints
 		}
-		return s
+		panic("field type for searchable must be an int type or string")
 	}
 	return func(bst *BinarySearchTree) {
 		bst.mapfn = fn

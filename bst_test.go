@@ -251,3 +251,8 @@ func BenchmarkFindByValue(b *testing.B) {
 		bst.FindByValue(i)
 	}
 }
+
+func TestGetAllLeafs(t *testing.T) {
+	bst := setUp()
+	assert.Len(t, bst.GetAllLeafs(), 4)
+}

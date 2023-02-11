@@ -210,3 +210,13 @@ func (bst BinarySearchTree) FindByValue(v any) *Leaf {
 	}
 	return findByKey(bst.root, key)
 }
+
+func (bst BinarySearchTree) GetAllLeafs() []*Leaf {
+	rt := make([]*Leaf, len(bst.leafMap))
+	i := 0
+	for _, key := range bst.leafMap {
+		rt[i] = bst.FindByKey(key)
+		i++
+	}
+	return rt
+}

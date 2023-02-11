@@ -1,0 +1,4 @@
+- fix it so insert can accept pointer types
+    right now when you insert a leaf that has a value containing a pointer the
+    reflection fails in the WithSearchable fn.
+
